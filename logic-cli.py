@@ -35,15 +35,10 @@ def input_combos(n: int, values:list[list[TruthValue]] = []) -> list[tuple(Truth
     if n <= 0:
         return [tuple(c) for c in values]
     else:
-        v = len(values)
-        values = values * 2
-        if v == 0:
-            v += 2
-            values += [[], []]
-        for i in range(v):
-            values[i].append(TruthValue.F)
-            values[i + v - 1].append(TruthValue.T)
-            return input_combos(n - 1, values)
+        if not values:
+            values = [[]]
+        values = [e + [v] for e in values for v in (TruthValue.F, TruthValue.T)]
+        return input_combos(n - 1, values)
 
 
 def to_truth_value(s: str) -> TruthValue:
