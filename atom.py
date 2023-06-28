@@ -1,19 +1,43 @@
 import re
 
-def parse_proposition(proposition: str):
-    matches = re.findall(r'~?[A-Z]', proposition)
-    if not matches:
-        print('not matching anything')
+
+class Atom:
+    # where should I keep the list of symbols?
+    #
+
+    def __init__(self, proposition: str) -> None:
+        self.symbols = dict()
+        self.parse_symbols(proposition)
+
+    def sym(self, symbol: str) -> function:
+        '''
+        returns a wrapper function to retrieve the value of the given symbol
+        '''
+        if symbol not in self.symbols:
+            raise Exception(f'Unkown symbol {symbol}')
+
+        return lambda symbol: self.symbols[symbol]
+
+    def parse_symbols(self, proposition: str) -> None:
+        matches = re.findall(r'[~().+A-Z]', proposition)
+        if not matches:
+            print('not matching anything')
+            return
+
+        for symbol in matches:
+            if symbol >= 'A' and symbol <= 'Z':
+                if symbol not in self.symbols:
+                    self.symbols[symbol] = None
+            else:
+                raise Exception('Symbol must be in range [A-Z]')
+            
+    def parse_logic(self):
         return
-
-    # find the final opening bracket and then start simplfying
-    return matches
-
-    
 
 
 def main():
-    print(parse_proposition('O=A+B.C'))
+    a = Atom('O=A.B+C')
+
 
 if __name__ == '__main__':
     main()
