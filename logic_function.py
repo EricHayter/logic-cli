@@ -1,19 +1,10 @@
 import re
 
-class Atom:
+class LogicFunction:
     def __init__(self, proposition: str) -> None:
         self.symbols = dict()
         self.init_symbols(proposition)
         self.logic_function = self.parse_logic(list(proposition))
-
-    def sym(self, symbol: str):
-        """
-        returns a wrapper function to retrieve the value of the given symbol\
-        WORKS PERFECTLY SMARTEST PROGRAMMER THAT EVER LIVED TYPE BEAT
-        """
-        if symbol not in self.symbols:
-            raise Exception(f"Unkown symbol {symbol}")
-        return lambda: self.symbols[symbol]
 
     def init_symbols(self, proposition: str) -> None:
         matches = re.findall(r"[~().+A-Z]", proposition)
@@ -31,14 +22,14 @@ class Atom:
                 ")",
                 ".",
                 "+",
-            ]: 
+            ]:
                 raise Exception("Symbol must be in range [A-Z]")
 
     def parse_logic(self, expression: list[object]) -> list:
         if "(" in expression:
-            start, stop = Atom.find_parenth_pair(expression)
-            logic = self.parse_logic(expression[start+1 : stop])
-            expression = Atom.replace_range(expression, start, stop, logic)
+            start, stop = LogicFunction.find_parenth_pair(expression)
+            logic = self.parse_logic(expression[start+1: stop])
+            expression = LogicFunction.replace_range(expression, start, stop, logic)
         for idx, ch in enumerate(expression):
             if type(ch) is str and ch >= "A" and ch <= "Z":
                 expression[idx] = self.sym(ch)
@@ -46,15 +37,17 @@ class Atom:
             loc = expression.index("~")
             if loc == len(expression):
                 raise Exception("Negation symbol is negating nothing")
-            Atom.replace_range(expression, loc, loc + 1, not expression[loc + 1])
+            LogicFunction.replace_range(expression, loc, loc + 1,
+                               not expression[loc + 1])
         while "+" in expression:
             loc = expression.index("+")
             if loc == 0 or loc == len(expression):
                 raise Exception(
                     "Incorrect formatting, OR statements must take two expressions to evaluate"
                 )
-            Atom.replace_range(
-                expression, loc - 1, loc + 1, expression[loc - 1] or expression[loc + 1]
+            LogicFunction.replace_range(
+                expression, loc - 1, loc +
+                1, expression[loc - 1] or expression[loc + 1]
             )
         while "." in expression:
             loc = expression.index(".")
@@ -62,13 +55,45 @@ class Atom:
                 raise Exception(
                     "Incorrect formatting, AND statements must take two expressions to evaluate"
                 )
-            Atom.replace_range(
+            LogicFunction.replace_range(
                 expression,
                 loc - 1,
                 loc + 1,
                 expression[loc - 1] and expression[loc + 1],
             )
         return expression[0]
+
+    def evaluate(self, values: list = None, mappings: dict = None) -> bool:
+        if mappings is not None:
+            for key, value in mappings.items():
+                if key not in self.symbols:
+                    raise Exception(f"Uknown symbol {key}")
+                if type(value) is not bool:
+                    raise Exception(f"Value of {key} must be a boolean type")
+                self.symbols[key] = value
+        elif values is not None:
+            if len(values) != len(self.symbols):
+                raise Exception('Inavlid amount of variables')
+            for key, value in zip(self.symbols, values):
+                if type(value) is bool:
+                    self.symbols[key] = value
+                else:
+                    raise Exception('value must be of type bool')
+        else:
+            raise Exception('must provide either values list or mappings')
+        return self.logic_function()
+
+    def get_symbols(self) -> list[str]:
+        return list(self.symbols.keys())
+
+    def sym(self, symbol: str):
+        """
+        returns a wrapper function to retrieve the value of the given symbol\
+        WORKS PERFECTLY SMARTEST PROGRAMMER THAT EVER LIVED TYPE BEAT
+        """
+        if symbol not in self.symbols:
+            raise Exception(f"Unkown symbol {symbol}")
+        return lambda: self.symbols[symbol]
 
     def find_parenth_pair(characters: list[object]) -> int:
         # maybe remake this into find pair type beat
@@ -91,41 +116,11 @@ class Atom:
         l[start] = replace
         return l
 
-    def get_symbols(self) -> list[str]:
-        return list(self.symbols.keys())
-
-    def evaluate(self, values: list = None, mappings: dict = None) -> bool:
-        if mappings is not None:
-            for key, value in mappings.items():
-                if key not in self.symbols:
-                    raise Exception(f"Uknown symbol {key}")
-                if type(value) is not bool:
-                    raise Exception(f"Value of {key} must be a boolean type")
-                self.symbols[key] = value
-        elif values is not None:
-            if len(values) != len(self.symbols):
-                raise Exception('Inavlid amount of variables')
-            for key, value in zip(self.symbols, values):
-                if type(value) is bool:
-                    self.symbols[key] = value
-                else:
-                    raise Exception('value must be of type bool')
+    def input_combos(n: int, values: list[list[bool]] = []) -> list[tuple]:
+        if n <= 0:
+            return [tuple(c) for c in values]
         else:
-            raise Exception('must provide either values list or mappings')
-
-        return self.logic_function()
-
-
-def main():
-    a = Atom("A+B.C")
-    print(a.evaluate({"A": True, "B": True, "C": False}))
-
-
-if __name__ == "__main__":
-    main()
-
-"""
-should be able to pass in a string
-split at every 'symbol' (except not)
-
-"""
+            if not values:
+                values = [[]]
+            values = [e + [v] for e in values for v in (False, True)]
+            return LogicFunction.input_combos(n - 1, values)
