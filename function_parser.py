@@ -1,6 +1,6 @@
 import re
 
-class LogicFunction:
+class FunctionParser:
     def __init__(self, proposition: str) -> None:
         self.symbols = dict()
         self.init_symbols(proposition)
@@ -27,9 +27,9 @@ class LogicFunction:
 
     def parse_logic(self, expression: list[object]) -> list:
         if "(" in expression:
-            start, stop = LogicFunction.find_parenth_pair(expression)
+            start, stop = find_parenth_pair(expression)
             logic = self.parse_logic(expression[start+1: stop])
-            expression = LogicFunction.replace_range(expression, start, stop, logic)
+            expression = replace_range(expression, start, stop, logic)
         for idx, ch in enumerate(expression):
             if type(ch) is str and ch >= "A" and ch <= "Z":
                 expression[idx] = self.sym(ch)
@@ -37,7 +37,7 @@ class LogicFunction:
             loc = expression.index("~")
             if loc == len(expression):
                 raise Exception("Negation symbol is negating nothing")
-            LogicFunction.replace_range(expression, loc, loc + 1,
+            replace_range(expression, loc, loc + 1,
                                not expression[loc + 1])
         while "+" in expression:
             loc = expression.index("+")
@@ -45,7 +45,7 @@ class LogicFunction:
                 raise Exception(
                     "Incorrect formatting, OR statements must take two expressions to evaluate"
                 )
-            LogicFunction.replace_range(
+            replace_range(
                 expression, loc - 1, loc +
                 1, expression[loc - 1] or expression[loc + 1]
             )
@@ -55,7 +55,7 @@ class LogicFunction:
                 raise Exception(
                     "Incorrect formatting, AND statements must take two expressions to evaluate"
                 )
-            LogicFunction.replace_range(
+            replace_range(
                 expression,
                 loc - 1,
                 loc + 1,
@@ -83,6 +83,13 @@ class LogicFunction:
             raise Exception('must provide either values list or mappings')
         return self.logic_function()
 
+    def get_truth_table(self) -> dict: 
+        combinations = input_combos(len(self.symbols))
+        truth_table = dict()
+        for c in combinations:
+            truth_table[c] = self.evaluate(c)
+        return truth_table
+
     def get_symbols(self) -> list[str]:
         return list(self.symbols.keys())
 
@@ -95,7 +102,7 @@ class LogicFunction:
             raise Exception(f"Unkown symbol {symbol}")
         return lambda: self.symbols[symbol]
 
-    def find_parenth_pair(characters: list[object]) -> int:
+def find_parenth_pair(characters: list[object]) -> int:
         # maybe remake this into find pair type beat
         # then return tuple for start + stop
         paren_open = False
@@ -110,17 +117,17 @@ class LogicFunction:
                 return characters.index("("), idx
         raise Exception("No closing bracket in the list of characters")
 
-    def replace_range(l: list, start: int, stop: int, replace: object) -> list:
-        for _ in range(stop - start):
-            l.pop(start)
-        l[start] = replace
-        return l
+def replace_range(l: list, start: int, stop: int, replace: object) -> list:
+    for _ in range(stop - start):
+        l.pop(start)
+    l[start] = replace
+    return l
 
-    def input_combos(n: int, values: list[list[bool]] = []) -> list[tuple]:
-        if n <= 0:
-            return [tuple(c) for c in values]
-        else:
-            if not values:
-                values = [[]]
-            values = [e + [v] for e in values for v in (False, True)]
-            return LogicFunction.input_combos(n - 1, values)
+def input_combos(n: int, values: list[list[bool]] = []) -> list[tuple]:
+    if n <= 0:
+        return [tuple(c) for c in values]
+    else:
+        if not values:
+            values = [[]]
+        values = [e + [v] for e in values for v in (False, True)]
+        return input_combos(n - 1, values)

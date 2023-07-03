@@ -1,8 +1,8 @@
-import logic_function
+import function_parser
 import logic_cli 
+import table_parser
 
-v = logic_cli.input_combos(2)
-a = logic_function.LogicFunction('A+(A.C)')
-print(a.get_symbols())
-for i in v:
-    print(i, a.evaluate(i))
+t = table_parser.parse_table('table.csv')
+print(t)
+for key, value in t.items():
+    print(key, value)
