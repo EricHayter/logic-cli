@@ -1,5 +1,6 @@
 import math
 import itertools
+import operator as op
 
 def simplify_function(func: dict) -> dict:
     num_vars = math.log(len(func), 2)
@@ -16,24 +17,15 @@ def simplify_function(func: dict) -> dict:
 # create a generator to make combos e.g.
 # (None, None, None, None) (True, None, None, None) ...
 def get_implicants(n: int) -> list:
-    c = 0
-    while c <= n:
-        # this isn't efficient since the thing will mix Nones
-        # this isn't working correctly atm
-        for value in itertools.combinations([True, False], c):
-            print(value)
-            for i in set(itertools.permutations((n- c) * [None] + list(value), n)):
-                yield i
-        c += 1
+    imp = list(set(itertools.product([True, False, None], repeat = n)))
+    return sorted(imp, key = lambda l : l.count(None), reverse=True)
 
-def input_combos(n: int, values: list[list[bool]] = []) -> list[tuple]:
+def input_combos(n: int, values: list[list[bool]] = [[]]) -> list[tuple]:
     if n <= 0:
         return [tuple(c) for c in values]
     else:
-        if not values:
-            values = [[]]
         values = [e + [v] for e in values for v in (False, True)]
         return input_combos(n - 1, values)
 
-    
-print(len([x for x in get_implicants(4)]))
+for i in get_implicants(3):
+    print(i)
