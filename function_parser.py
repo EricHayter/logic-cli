@@ -1,6 +1,9 @@
 import re
-from karnugh import input_combos
+from karnaugh import input_combos
 
+# not is not working nicely for me
+# either need a smart fix for the not isseue in the code
+# or make another function that solves the problems that I am having
 
 class FunctionParser:
     def __init__(self, proposition: str) -> None:
@@ -17,7 +20,7 @@ class FunctionParser:
         for symbol in matches:
             if symbol >= "A" and symbol <= "Z":
                 if symbol not in self.symbols:
-                    self.symbols[symbol] = None
+                    self.symbols[symbol] = True
             elif symbol not in [
                 "~",
                 "(",
@@ -39,14 +42,16 @@ class FunctionParser:
             loc = expression.index("~")
             if loc == len(expression):
                 raise Exception("Negation symbol is negating nothing")
-            replace_range(expression, loc, loc + 1, not expression[loc + 1])
+            breakpoint()
+            function = expression[loc + 1]
+            expression = replace_range(expression, loc, loc + 1, lambda : not function())
         while "+" in expression:
             loc = expression.index("+")
             if loc == 0 or loc == len(expression):
                 raise Exception(
                     "Incorrect formatting, OR statements must take two expressions to evaluate"
                 )
-            replace_range(
+            expression = replace_range(
                 expression, loc - 1, loc + 1, expression[loc - 1] or expression[loc + 1]
             )
         while "." in expression:

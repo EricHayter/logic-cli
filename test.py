@@ -1,8 +1,8 @@
 import function_parser
-import logic_cli 
-import table_parser
+import karnaugh
 
-t = table_parser.parse_table('table.csv')
-print(t)
-for key, value in t.items():
-    print(key, value)
+a = function_parser.FunctionParser('A+B')
+#a = function_parser.FunctionParser('A.B+~A')
+function = a.get_truth_table()
+print(function)
+print(karnaugh.simplify_function(function))
