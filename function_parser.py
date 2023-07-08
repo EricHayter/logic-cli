@@ -27,7 +27,7 @@ class FunctionParser:
             self.symbols[key] = value
         if "(" in expression:
             start, stop = find_parenth_pair(expression)
-            logic = self.parse_logic(expression[start + 1: stop])
+            logic = self.evaluate(expression[start + 1: stop]) # this isn't working the wya I want it to
             expression = replace_range(expression, start, stop, logic)
         for idx, ch in enumerate(expression):
             if type(ch) is str and ch >= "A" and ch <= "Z":

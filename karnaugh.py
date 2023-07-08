@@ -2,10 +2,13 @@ import math
 import itertools
 
 
-def simplify_function(func: dict) -> dict:
+def simplify_function(func: dict, variables: list[str], SOP: bool = True) -> str:
     num_vars = int(math.log(len(func), 2))
     prime_implicants = []
-    minterms = [c for c in func if func[c]]
+    if SOP:
+        minterms = [c for c in func if func[c]]
+    else:
+        [c for c in func if not func[c]]
     for implicant in get_implicants(num_vars):
         if not minterms:
             break
@@ -18,7 +21,16 @@ def simplify_function(func: dict) -> dict:
             for i in included:
                 if i in minterms:
                     minterms.remove(i)
-    return prime_implicants
+
+    if SOP:
+        print(prime_implicants)
+        for idx, term in enumerate(prime_implicants):
+            if term == 0:
+                prime_implicants[idx] = '~' + variables[idx]
+            else:
+                prime_implicants[idx] = variables[idx]
+
+        return '+'.join(['.'.join(term) for term in prime_implicants])
 
 
 def included_minterms(minterms: list[tuple], implicant: tuple) -> list[tuple]:
