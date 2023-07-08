@@ -13,7 +13,6 @@ def simplify_function(func: dict) -> dict:
         if not minterms:
             break
         included = included_minterms(func.keys(), implicant)
-        print(implicant, included)
         for m in included:
             if not func[m]: # implicant can't wont work if minterm is false
                 break

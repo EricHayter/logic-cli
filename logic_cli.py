@@ -31,14 +31,6 @@ def parse_file(file_name: str) -> list[list[TruthValue]]:
                 
     return truth_table
 
-def input_combos(n: int, values:list[list[bool]] = []) -> list[tuple]:
-    if n <= 0:
-        return [tuple(c) for c in values]
-    else:
-        if not values:
-            values = [[]]
-        values = [e + [v] for e in values for v in (False, True)]
-        return input_combos(n - 1, values)
 
 
 def to_truth_value(s: str) -> TruthValue:
@@ -50,3 +42,5 @@ def to_truth_value(s: str) -> TruthValue:
         return TruthValue.D
     else:
         raise Exception(f'invalid truth symbol {s}')
+
+# create a central class for eth truth table and functions to convert to
