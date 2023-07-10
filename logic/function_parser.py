@@ -1,13 +1,13 @@
-from karnaugh import input_combos
+from logic.utils import input_combos, find_parenth_pair, replace_range
 
 
 class FunctionParser:
     def __init__(self, proposition: str) -> None:
         self.proposition = list(proposition)
-        self.symbols = dict()
         self.init_symbols()
 
     def init_symbols(self) -> None:
+        self.symbols = dict()
         for symbol in self.proposition:
             if symbol >= "A" and symbol <= "Z":
                 if symbol not in self.symbols:
@@ -21,16 +21,17 @@ class FunctionParser:
             ]:
                 raise Exception("Symbol must be in range [A-Z]")
 
-    def evaluate(self, values: list) -> bool:
-        expression = self.proposition[:]
+    def evaluate(self, expression: list, values: list) -> bool:
+        expression = expression[:]
         for key, value in zip(self.symbols, values):
             self.symbols[key] = value
         if "(" in expression:
             start, stop = find_parenth_pair(expression)
-            logic = self.evaluate(expression[start + 1: stop]) # this isn't working the wya I want it to
-            expression = replace_range(expression, start, stop, logic)
+            #breakpoint()
+            enclosed_logic = self.evaluate(expression[start + 1: stop], values)
+            expression = replace_range(expression, start, stop, enclosed_logic)
         for idx, ch in enumerate(expression):
-            if type(ch) is str and ch >= "A" and ch <= "Z":
+            if type(ch) == str and ch >= "A" and ch <= "Z":
                 expression[idx] = self.symbols[ch]
         while "~" in expression:
             loc = expression.index("~")
@@ -64,32 +65,5 @@ class FunctionParser:
         combinations = input_combos(len(self.symbols))
         truth_table = dict()
         for c in combinations:
-            truth_table[c] = self.evaluate(c)
+            truth_table[c] = self.evaluate(self.proposition, c)
         return truth_table
-
-    def get_symbols(self) -> list[str]:
-        return list(self.symbols.keys())
-
-
-def find_parenth_pair(characters: list[object]) -> int:
-    # maybe remake this into find pair type beat
-    # then return tuple for start + stop
-    paren_open = False
-    count = 0
-    for idx, chr in enumerate(characters):
-        if chr == "(":
-            paren_open = True
-            count += 1
-        elif chr == ")":
-            count -= 1
-        if count == 0 and paren_open:
-            return characters.index("("), idx
-    raise Exception("No closing bracket in the list of characters")
-
-
-def replace_range(l: list, start: int, stop: int, replace: object) -> list:
-    c = l[:]
-    for _ in range(stop - start):
-        c.pop(start)
-    c[start] = replace
-    return c

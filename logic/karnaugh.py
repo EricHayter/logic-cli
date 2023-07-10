@@ -49,11 +49,3 @@ def included_minterms(minterms: list[tuple], implicant: tuple) -> list[tuple]:
 def get_implicants(n: int) -> list:
     imp = list(set(itertools.product([True, False, None], repeat=n)))
     return sorted(imp, key=lambda l: l.count(None), reverse=True)
-
-
-def input_combos(n: int, values: list[list[bool]] = [[]]) -> list[tuple]:
-    if n <= 0:
-        return [tuple(c) for c in values]
-    else:
-        values = [e + [v] for e in values for v in (False, True)]
-        return input_combos(n - 1, values)
