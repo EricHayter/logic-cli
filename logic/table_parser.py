@@ -1,5 +1,6 @@
 import csv
 
+
 def parse_table(file_location: str) -> dict:
     try:
         with open(file_location, 'r') as csvfile:
@@ -12,12 +13,12 @@ def parse_table(file_location: str) -> dict:
             return rows
     except IOError:
         raise Exception("Error: Unable to open the file.")
-    
-def str_to_bool(v: str) -> bool:
+
+
+def str_to_bool(v: str) -> bool | None:
     if v == 'T':
         return True
     elif v == 'F':
         return False
     else:
-        print(v[1])
         return None

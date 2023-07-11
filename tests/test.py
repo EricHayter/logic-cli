@@ -1,13 +1,21 @@
 from context import logic
 import logic.function_parser
 import logic.karnaugh
+from pprint import pprint
 
-#a = function_parser.FunctionParser('A+B')
-a = logic.function_parser.FunctionParser('(A+B).(A+C)')
+a = logic.function_parser.FunctionParser('(A+B).(A+C)') # (A+B).(A+C)
 function = a.get_truth_table()
-print(function)
-#print(function)
-print(logic.karnaugh.simplify_function(function,  ('A','B','C')))
+
+print('This is the function: ')
+print(a.get_variables())
+pprint(function)
+
+
+simple_function = logic.karnaugh.simplify_function(function)
+print('This prime implicants are: ')
+pprint(simple_function)
+
+print(logic.karnaugh.print_sop(simple_function,  a.get_variables()))
 
 # get rid of parse logic but refactor most of the insides into evaluate
 # will need to run the function on every call

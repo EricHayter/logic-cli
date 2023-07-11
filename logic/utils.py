@@ -6,14 +6,14 @@ def input_combos(n: int, values: list[list[bool]] = [[]]) -> list[tuple]:
         return input_combos(n - 1, values)
 
 
-def find_parenth_pair(characters: list[object]) -> int:
+def find_parenthesis(characters: list[object]) -> int:
     paren_open = False
     count = 0
-    for idx, chr in enumerate(characters):
-        if chr == "(":
+    for idx, char in enumerate(characters):
+        if char == "(":
             paren_open = True
             count += 1
-        elif chr == ")":
+        elif char == ")":
             count -= 1
         if count == 0 and paren_open:
             return characters.index("("), idx
