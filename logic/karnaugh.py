@@ -76,8 +76,18 @@ def get_implicants(n: int) -> list[tuple[bool | None]]:
     return sorted(imp, key=lambda l: l.count(None), reverse=True)
 
 
-def print_sop(prime_implicants: list[tuple[bool | None]],  variables: tuple[str]) -> str:
+def get_sop(prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
+    """ Gives a string representation of a set of prime implicants in sum of product format
+
+    :param prime_implicants: a list of prime implicants
+    :param variables: names of each variable for each index in the prime implicant tuples
+    :return: a string representation of the sum of products
+    """
     sop_str = []
+    if len(prime_implicants) == 1 and set(prime_implicants[0]) == {None}:
+        return 'T'
+    elif not prime_implicants:
+        return 'F'
     for implicant in prime_implicants:
         implicant = [convert_atom(i, z) for i, z in zip(implicant, variables)]
         implicant = [i for i in implicant if i is not None]
@@ -86,8 +96,18 @@ def print_sop(prime_implicants: list[tuple[bool | None]],  variables: tuple[str]
     return '+'.join(sop_str)
 
 
-def print_pos(prime_implicants: list[tuple[bool | None]],  variables: tuple[str]) -> str:
+def get_pos(prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
+    """ Gives a string representation of a set of prime implicants in product of sum format
+
+    :param prime_implicants: a list of prime implicants
+    :param variables: names of each variable for each index in the prime implicant tuples
+    :return: a string representation of the product of sums
+    """
     pos_str = []
+    if len(prime_implicants) == 1 and set(prime_implicants[0]) == {None}:
+        return 'T'
+    elif not prime_implicants:
+        return 'F'
     for implicant in prime_implicants:
         implicant = [convert_atom(i, z) for i, z in zip(implicant, variables)]
         implicant = [i for i in implicant if i is not None]

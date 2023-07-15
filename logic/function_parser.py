@@ -1,4 +1,4 @@
-from logic.utils import input_combos, find_parenthesis, replace_range
+from utils import input_combos, find_parenthesis, replace_range
 
 
 class FunctionParser:
