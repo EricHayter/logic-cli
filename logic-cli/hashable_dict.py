@@ -1,10 +1,9 @@
 """
-Module for implementing function input which is a immutable dictionary class
-since the default dict implementation is not hashable
+simple hashable dict class
 """
 
 
-class FunctionInput(dict):
+class HashableDict(dict):
     """
     simple immutable dict class for creating hashable mappings for variables
     """

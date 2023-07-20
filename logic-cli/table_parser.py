@@ -1,24 +1,39 @@
+"""docstring"""
 import csv
+from io import TextIOWrapper
+
+from hashable_function import HashableDict
+from logic_function import LogicFunction
 
 
-def parse_table(file_location: str) -> dict:
-    try:
-        with open(file_location, 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
-            rows = dict()
-            for row in reader:
-                row = [str_to_bool(elem) for elem in row]
-                variables, output = tuple(row[:-1]), row[-1]
-                rows[variables] = output
-            return rows
-    except IOError:
-        raise Exception("Error: Unable to open the file.")
+def parse_table(csv_file: TextIOWrapper) -> LogicFunction:
+    """docstring"""
+
+    reader = csv.DictReader(csv_file)
+    if reader.fieldnames is None:
+        raise ValueError("Must provide file with CSV format with headers")
+    if 'OUT' not in reader.fieldnames:
+        raise ValueError("must contain an out column in the function CSV")
+    variables = tuple(
+        fieldname for fieldname in reader.fieldnames if fieldname != 'OUT'
+    )
+
+    def parse_row(row: dict) -> HashableDict:
+        row_dict = HashableDict()
+        for variable in variables:
+            row_dict[variable] = str_to_bool(row[variable])
+        return row_dict
+
+    truth_table = {}
+    for row in reader:
+        truth_table[parse_row(row)] = row['OUTPUT']
+    return LogicFunction(truth_table, variables)
 
 
-def str_to_bool(v: str) -> bool | None:
-    if v == 'T':
+def str_to_bool(value: str) -> bool:
+    """docstring"""
+    if value == 'T':
         return True
-    elif v == 'F':
+    if value == 'F':
         return False
-    else:
-        return None
+    raise ValueError("Value of str must be either T or F")

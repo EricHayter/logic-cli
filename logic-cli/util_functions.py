@@ -4,7 +4,7 @@ docstring
 
 import itertools
 
-from function_input import FunctionInput
+from hashable_function import HashableDict
 
 
 def find_parenthesis(characters: list[object]) -> tuple[int, int]:
@@ -34,7 +34,7 @@ def input_combos(symbols: tuple[str, ...]):
     num_vars = len(symbols)
     truth_values = itertools.product([True, False], repeat=num_vars)
     for truth_combo in truth_values:
-        combo = FunctionInput()
+        combo = HashableDict()
         for variable, value in zip(symbols, truth_combo):
             combo[variable] = value
         yield combo

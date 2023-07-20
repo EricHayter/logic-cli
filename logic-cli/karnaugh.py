@@ -6,7 +6,7 @@ import itertools
 from typing import List
 
 from logic_function import LogicFunction
-from function_input import FunctionInput
+from hashable_dict import HashableDict
 
 
 def compliment_function(func: LogicFunction) -> LogicFunction:
@@ -26,13 +26,8 @@ def compliment_function(func: LogicFunction) -> LogicFunction:
     return new_func
 
 
-def get_prime_implicants(func: LogicFunction) -> List[FunctionInput]:
-    """Returns the shortest possible list of prime implicants to represent a function.
-
-    :param func: a dictionary with tuple-boolean pairs to represent the input and output of a logical function
-    :return: a list of prime implicants used to simplify the function
-    """
-    assert isinstance(func, LogicFunction)
+def get_prime_implicants(func: LogicFunction) -> List[HashableDict]:
+    """docstring"""
     prime_implicants = []
     minterms = [c for c in func if func[c] is True]
     for implicant in get_implicants(func.variables):
@@ -55,25 +50,27 @@ def get_prime_implicants(func: LogicFunction) -> List[FunctionInput]:
 
 def get_essential_implicants(
     func: LogicFunction,
-    prime_implicants: List[FunctionInput],
-) -> List[FunctionInput]:
-    """
-    docstring
-    """
-    essential_implicants: List[FunctionInput] = []
+    prime_implicants: List[HashableDict],
+) -> List[HashableDict]:
+    """docstring"""
+    essential_implicants: List[HashableDict] = []
     for implicant in prime_implicants:
-        if is_essential(func, prime_implicants, implicant):
+        other_implicants = [i for i in prime_implicants if i != implicant]
+        if is_essential(func, other_implicants, implicant):
             essential_implicants.append(implicant)
     return essential_implicants
 
 
 def is_essential(
-    func: LogicFunction, implicants: list[FunctionInput], implicant: FunctionInput
+    func: LogicFunction,
+    implicants: list[HashableDict],
+    implicant: HashableDict
 ) -> bool:
     """
     docstring
     """
     # get the list of minterms in the implicant we want
+    # breakpoint()
     minterms = included_minterms(func, implicant)
     for imp in implicants:
         for minterm in included_minterms(func, imp):
@@ -83,8 +80,8 @@ def is_essential(
 
 
 def included_minterms(
-    func: LogicFunction, implicant: FunctionInput
-) -> list[FunctionInput]:
+    func: LogicFunction, implicant: HashableDict
+) -> list[HashableDict]:
     """This function finds all of the minterms grouped in a implicant"""
     included = []
     terms = get_minterms(func.variables)
@@ -102,7 +99,7 @@ def get_minterms(variables: tuple[str, ...]):
     num_variables = len(variables)
     truth_combos = itertools.product([True, False], repeat=num_variables)
     for truth_values in truth_combos:
-        yield FunctionInput(zip(variables, truth_values))
+        yield HashableDict(zip(variables, truth_values))
 
 
 def get_implicants(variables: tuple[str, ...]):
@@ -112,60 +109,43 @@ def get_implicants(variables: tuple[str, ...]):
         for used_variables in itertools.combinations(variables, i):
             truth_combos = itertools.product([True, False], repeat=i)
             for truth_values in truth_combos:
-                yield FunctionInput(zip(used_variables, truth_values))
+                yield HashableDict(zip(used_variables, truth_values))
 
 
-def get_sop(prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
+def get_sop(prime_implicants: list[HashableDict]) -> str:
     """Gives a string representation of a set of prime implicants in sum of product format
 
     :param prime_implicants: a list of prime implicants
     :param variables: names of each variable for each index in the prime implicant tuples
     :return: a string representation of the sum of products
     """
+    # create a check for contradictions and tautologies
     sop_str = []
-    if len(prime_implicants) == 1 and set(prime_implicants[0]) == {None}:
-        return "T"
-    elif not prime_implicants:
-        return "F"
     for implicant in prime_implicants:
-        implicant = [convert_atom(i, z) for i, z in zip(implicant, variables)]
-        implicant = [i for i in implicant if i is not None]
-        implicant = f"({'.'.join(implicant)})"
-        sop_str.append(implicant)
+        atoms = [convert_atom(s, v) for s, v in implicant.items()]
+        implicant_str = f"({'.'.join(atoms)})"
+        sop_str.append(implicant_str)
     return "+".join(sop_str)
 
 
-def get_pos(prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
-    """Gives a string representation of a set of prime implicants in product of sum format
-
-    :param prime_implicants: a list of prime implicants
-    :param variables: names of each variable for each index in the prime implicant tuples
-    :return: a string representation of the product of sums
-    """
+def get_pos(
+        prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
+    """docstring"""
     pos_str = []
-    if len(prime_implicants) == 1 and set(prime_implicants[0]) == {None}:
-        return "T"
-    elif not prime_implicants:
-        return "F"
     for implicant in prime_implicants:
-        implicant = [convert_atom(i, z) for i, z in zip(implicant, variables)]
+        implicant = [
+            convert_atom(
+                i, z) for i, z in zip(
+                implicant, variables)]
         implicant = [i for i in implicant if i is not None]
         implicant = f"({'+'.join(implicant)})"
         pos_str.append(implicant)
     return ".".join(pos_str)
 
 
-def convert_atom(value: bool | None, symbol: str) -> str | None:
-    """Returns the string representation of a symbol. If a symbol called 'A' is given with a value of False "~A" will
-    be returned or "A" if value is True. If the value of the symbol is set to None will be returned.
-
-    :param value: the boolean value of the symbol
-    :param symbol: the name of the symbols e.g. A, B, C,...
-    :return: A string representation of the symbol
-    """
-    if value is None:
-        return None
-    elif value is True:
+def convert_atom(symbol: str, value: bool) -> str:
+    """docstring"""
+    if value is True:
         return symbol
-    elif value is False:
-        return "~" + symbol
+
+    return "~" + symbol
