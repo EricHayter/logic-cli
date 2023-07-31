@@ -101,15 +101,3 @@ def evaluate(expression: list, symbols: HashableDict) -> bool:
             expression[loc - 1] and expression[loc + 1],
         )
     return expression[0]
-
-
-def get_truth_table(proposition: list, symbols: tuple[str, ...]) -> dict:
-    """
-    docstring
-    tuple of all the symbols in the function
-    dicts are not hashable XDD
-    """
-    truth_table = {}
-    for combo in input_combos(symbols):
-        truth_table[combo] = evaluate(proposition, combo)
-    return truth_table

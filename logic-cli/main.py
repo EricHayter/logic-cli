@@ -6,10 +6,10 @@ import argparse
 
 from function_parser import parse_function
 from table_parser import parse_table
-from karnaugh import get_prime_implicants, get_essential_implicants, get_sop
+from logic_function import print_truth_table
+from karnaugh import print_sop, print_pos
 
 
-# custom file extensions?
 def main():
     """main function"""
     parser = argparse.ArgumentParser(
@@ -17,7 +17,9 @@ def main():
         description="A simple tool for analyzing and simplifying logical functions",
     )
     parser.add_argument("filename")
-    parser.add_argument("-t", "--table")
+    parser.add_argument("-t", "--table", action="store_true")
+    parser.add_argument("-sop", "--sum-of-products", action="store_true")
+    parser.add_argument("-pos", "--product-of-sums", action="store_true")
     args = parser.parse_args()
     if args.filename.endswith('.func'):
         func = parse_function(args.filename)
@@ -26,13 +28,12 @@ def main():
     else:
         raise ValueError("Invalid file format")
 
-    # printing out POS or SOP
-    # printing out a table if they want it
-
-    prime_implicants = get_prime_implicants(func)
-    essential_implicants = get_essential_implicants(
-        func, prime_implicants)
-    print(get_sop(essential_implicants))
+    if args.table:
+        print_truth_table(func)
+    if args.sum_of_products:
+        print_sop(func)
+    if args.product_of_sums:
+        print_pos(func)
 
 
 if __name__ == "__main__":

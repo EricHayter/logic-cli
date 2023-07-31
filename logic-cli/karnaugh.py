@@ -112,36 +112,49 @@ def get_implicants(variables: tuple[str, ...]):
                 yield HashableDict(zip(used_variables, truth_values))
 
 
-def get_sop(prime_implicants: list[HashableDict]) -> str:
-    """Gives a string representation of a set of prime implicants in sum of product format
-
-    :param prime_implicants: a list of prime implicants
-    :param variables: names of each variable for each index in the prime implicant tuples
-    :return: a string representation of the sum of products
+def print_sop(func: LogicFunction) -> None:
     """
-    # create a check for contradictions and tautologies
+    """
+    if all(value is True or value is None for value in func.values()):
+        print("1")
+        return
+    elif all(value is False or value is None for value in func.values()):
+        print("0")
+        return
+
+    prime_implicants = get_prime_implicants(func)
+    essential_implicants = get_essential_implicants(func, prime_implicants)
+
     sop_str = []
-    for implicant in prime_implicants:
+    for implicant in essential_implicants:
         atoms = [convert_atom(s, v) for s, v in implicant.items()]
         implicant_str = f"({'.'.join(atoms)})"
         sop_str.append(implicant_str)
-    return "+".join(sop_str)
+    print(" + ".join(sop_str))
 
 
-def get_pos(prime_implicants: list[HashableDict]) -> str:
-    """Gives a string representation of a set of prime implicants in sum of product format
-
-    :param prime_implicants: a list of prime implicants
-    :param variables: names of each variable for each index in the prime implicant tuples
-    :return: a string representation of the sum of products
+def print_pos(func: LogicFunction) -> None:
     """
-    # create a check for contradictions and tautologies
+    docstring
+    """
+
+    if all(value is True or value is None for value in func.values()):
+        print("1")
+        return
+    elif all(value is False or value is None for value in func.values()):
+        print("0")
+        return
+
+    func = compliment_function(func)
+    prime_implicants = get_prime_implicants(func)
+    essential_implicants = get_essential_implicants(func, prime_implicants)
+
     pos_str = []
-    for implicant in prime_implicants:
+    for implicant in essential_implicants:
         atoms = [convert_atom(s, v) for s, v in implicant.items()]
         implicant_str = f"({'+'.join(atoms)})"
         pos_str.append(implicant_str)
-    return ".".join(pos_str)
+    print(" . ".join(pos_str))
 
 
 def convert_atom(symbol: str, value: bool) -> str:

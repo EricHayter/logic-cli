@@ -4,7 +4,7 @@ docstring
 
 import itertools
 
-from hashable_function import HashableDict
+from hashable_dict import HashableDict
 
 
 def find_parenthesis(characters: list[object]) -> tuple[int, int]:
