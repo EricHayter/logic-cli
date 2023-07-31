@@ -17,15 +17,17 @@ def main():
         description="A simple tool for analyzing and simplifying logical functions",
     )
     parser.add_argument("filename")
-    parser.add_argument("-t", "--table")  # option that takes a value
+    parser.add_argument("-t", "--table")
     args = parser.parse_args()
-    with open(args.filename, "r") as file:
-        if args.filename.endswith('.func'):
-            func = parse_function(file.readline().strip())
-        elif args.filename.endswith('.table'):
-            func = parse_table(file)
-        else:
-            raise ValueError(f"Invalid file format")
+    if args.filename.endswith('.func'):
+        func = parse_function(args.filename)
+    elif args.filename.endswith('.table'):
+        func = parse_table(args.filename)
+    else:
+        raise ValueError("Invalid file format")
+
+    # printing out POS or SOP
+    # printing out a table if they want it
 
     prime_implicants = get_prime_implicants(func)
     essential_implicants = get_essential_implicants(

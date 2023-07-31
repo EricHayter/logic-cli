@@ -128,18 +128,19 @@ def get_sop(prime_implicants: list[HashableDict]) -> str:
     return "+".join(sop_str)
 
 
-def get_pos(
-        prime_implicants: list[tuple[bool | None]], variables: tuple[str]) -> str:
-    """docstring"""
+def get_pos(prime_implicants: list[HashableDict]) -> str:
+    """Gives a string representation of a set of prime implicants in sum of product format
+
+    :param prime_implicants: a list of prime implicants
+    :param variables: names of each variable for each index in the prime implicant tuples
+    :return: a string representation of the sum of products
+    """
+    # create a check for contradictions and tautologies
     pos_str = []
     for implicant in prime_implicants:
-        implicant = [
-            convert_atom(
-                i, z) for i, z in zip(
-                implicant, variables)]
-        implicant = [i for i in implicant if i is not None]
-        implicant = f"({'+'.join(implicant)})"
-        pos_str.append(implicant)
+        atoms = [convert_atom(s, v) for s, v in implicant.items()]
+        implicant_str = f"({'+'.join(atoms)})"
+        pos_str.append(implicant_str)
     return ".".join(pos_str)
 
 

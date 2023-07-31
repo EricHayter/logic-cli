@@ -7,21 +7,29 @@ or a truth table for the function can be given in the format of a dictionary
 
 
 from typing import List
-from io import TextIOWrapper
+from ast import literal_eval
 
+from karnaugh import included_minterms
 from util_functions import find_parenthesis, replace_range, input_combos
 from logic_function import LogicFunction
 from hashable_dict import HashableDict
 
 
-def parse_function(file: TextIOWrapper) -> LogicFunction:  # should take io.
+def parse_function(file_name: str) -> LogicFunction:  # should take io.
     """
     fill this docstring
     """
-    proposition = file.readline()
-    symbols = get_symbols(proposition)
-    truth_table = get_truth_table(list(proposition), symbols)
-    return LogicFunction(truth_table, symbols)
+    with open(file_name, encoding='utf-8') as file:
+        proposition = file.readline()
+        symbols = get_symbols(proposition)
+        truth_table = get_truth_table(list(proposition), symbols)
+        logic_function = LogicFunction(truth_table, symbols)
+        for line in file:
+            terms = literal_eval(line.strip())
+            for minterm in included_minterms(logic_function, terms):
+                logic_function[minterm] = None
+
+    return logic_function
 
 
 def get_symbols(proposition: str) -> tuple[str, ...]:

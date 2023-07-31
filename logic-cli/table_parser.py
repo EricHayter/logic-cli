@@ -6,10 +6,10 @@ from hashable_function import HashableDict
 from logic_function import LogicFunction
 
 
-def parse_table(csv_file: TextIOWrapper) -> LogicFunction:
+def parse_table(csv_file: str) -> LogicFunction:
     """docstring"""
-
-    reader = csv.DictReader(csv_file)
+    with open(csv_file) as file:
+        reader = csv.DictReader(file)
     if reader.fieldnames is None:
         raise ValueError("Must provide file with CSV format with headers")
     if 'OUT' not in reader.fieldnames:
