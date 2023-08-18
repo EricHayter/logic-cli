@@ -1,6 +1,5 @@
-"""docstring"""
+"""table parser functions"""
 import csv
-from io import TextIOWrapper
 
 from hashable_dict import HashableDict
 from logic_function import LogicFunction
@@ -19,10 +18,12 @@ def parse_table(csv_file: str) -> LogicFunction:
     return LogicFunction(truth_table, variables)
 
 
-def str_to_bool(value: str) -> bool:
+def str_to_bool(value: str) -> bool | None:
     """docstring"""
-    if value == 'T' or value == '1' or value == 'True':
+    if value in ('T', '1', 'True'):
         return True
-    if value == 'F' or value == '0' or value == 'False':
+    if value in ('F', '0', 'False'):
         return False
+    if value == 'D':
+        return None
     raise ValueError("Value of str must be either T or F")

@@ -6,6 +6,10 @@ from hashable_dict import HashableDict
 
 
 class LogicFunction(dict):
+    """logic function is a dictionary that stores inputs and ouputs of a
+    function in the style of a dictionary and has a variables member to check
+    the variables of the function"""
+
     def __init__(self, value, variables: tuple) -> None:
         self.__variables = variables
         for key in value:
@@ -15,7 +19,8 @@ class LogicFunction(dict):
                 raise ValueError("Keys must be of length variables")
             for variable in variables:
                 if variable not in key:
-                    raise ValueError("Keys must have the same variables as the function")
+                    raise ValueError(
+                        "Keys must have the same variables as the function")
         dict.__init__(self, value)
 
     @property
@@ -27,8 +32,7 @@ class LogicFunction(dict):
 
 
 def print_truth_table(func: LogicFunction) -> None:
-    """
-    """
+    """Prints out the truth table of a logic function"""
     variables = func.variables
     print(*variables, 'output', sep='\t')
     for key, value in func.items():
@@ -36,4 +40,3 @@ def print_truth_table(func: LogicFunction) -> None:
         for i in key.values():
             print(i, end='\t')
         print(value)
-

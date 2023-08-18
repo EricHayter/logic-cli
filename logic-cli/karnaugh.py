@@ -27,7 +27,7 @@ def compliment_function(func: LogicFunction) -> LogicFunction:
 
 
 def get_prime_implicants(func: LogicFunction) -> List[HashableDict]:
-    """docstring"""
+    """finds all of the prime implicants in a logical function"""
     prime_implicants = []
     minterms = [c for c in func if func[c] is True]
     for implicant in get_implicants(func.variables):
@@ -52,7 +52,7 @@ def get_essential_implicants(
     func: LogicFunction,
     prime_implicants: List[HashableDict],
 ) -> List[HashableDict]:
-    """docstring"""
+    """reduces list of prime implicants to essential prime implicants"""
     essential_implicants: List[HashableDict] = []
     for implicant in prime_implicants:
         other_implicants = [i for i in prime_implicants if i != implicant]
@@ -67,7 +67,7 @@ def is_essential(
     implicant: HashableDict
 ) -> bool:
     """
-    docstring
+    checks if an implicant is essential
     """
     # get the list of minterms in the implicant we want
     # breakpoint()
@@ -113,12 +113,11 @@ def get_implicants(variables: tuple[str, ...]):
 
 
 def print_sop(func: LogicFunction) -> None:
-    """
-    """
+    """prints the sum of products simplification of a function"""
     if all(value is True or value is None for value in func.values()):
         print("1")
         return
-    elif all(value is False or value is None for value in func.values()):
+    if all(value is False or value is None for value in func.values()):
         print("0")
         return
 

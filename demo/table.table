@@ -1,0 +1,9 @@
+A,B,C,OUT
+F,F,F,D
+F,F,T,T
+F,T,F,D
+F,T,T,F
+T,F,F,T
+T,F,T,D
+T,T,F,F
+T,T,T,F
